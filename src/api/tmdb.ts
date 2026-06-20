@@ -1,5 +1,5 @@
 import { create } from 'axios';
-import { Vibe, MovieResponse } from '../types/movie.types';
+import { Vibe, MovieResponse, MovieDetails } from '../types/movie.types';
 
 type VibeConfig = {
   with_genres: string;
@@ -80,6 +80,7 @@ export const fetchMoviesByVibe = async (vibe: Vibe): Promise<MovieResponse> => {
       language: 'en-US',
       page: randomPage, 
       without_poster: false, 
+      append_to_response: 'videos,credits,watch/providers',
       ...config,
     }
   });
@@ -87,6 +88,16 @@ export const fetchMoviesByVibe = async (vibe: Vibe): Promise<MovieResponse> => {
   if (data && data.results) {
     data.results = data.results.sort(() => Math.random() - 0.5);
   }
+
+  return data;
+};
+
+export const fetchMovieDetails = async (movieId: number): Promise<MovieDetails> => {
+  const { data } = await tmdb.get<MovieDetails>(`/movie/${movieId}`, {
+    params: {
+      append_to_response: 'videos,credits',
+    }
+  });
 
   return data;
 };
