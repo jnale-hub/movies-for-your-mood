@@ -2,9 +2,11 @@ import { EBGaramond_400Regular, EBGaramond_400Regular_Italic, useFonts as useSer
 import { Inter_400Regular, useFonts as useInterFonts } from '@expo-google-fonts/inter';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef } from 'react';
-import { Animated, Pressable, ScrollView, Text, View } from 'react-native';
+import { Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { FilmGrain } from '../components/FilmGrain';
 import { Vibe } from '../types/movie.types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useJournalStore } from '@/store/useJournalStore';
 
 const MoodTile = ({ 
   emoji, 
@@ -85,6 +87,9 @@ export const VibeCheck = ({ onSelectVibe }: { onSelectVibe: (vibe: Vibe) => void
   let [interLoaded] = useInterFonts({ Inter_400Regular });
   let [serifLoaded] = useSerifFonts({ EBGaramond_400Regular, EBGaramond_400Regular_Italic });
 
+  const insets = useSafeAreaInsets(); 
+  const { openComposer } = useJournalStore();
+
   const titleOpacity = useRef(new Animated.Value(0)).current;
   
   useEffect(() => {
@@ -118,6 +123,15 @@ export const VibeCheck = ({ onSelectVibe }: { onSelectVibe: (vibe: Vibe) => void
           </View>
         </View>
       </ScrollView>
+
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        onPress={() => openComposer()} 
+        style={{ bottom: Math.max(insets.bottom + 20, 32), right: 24 }}
+        className="absolute bg-dark-charcoal px-5 py-4 rounded-full shadow-2xl flex-row items-center border border-white/10 z-50"
+      >
+        <Text className="text-soft-cream text-lg mr-2 leading-none">✍🏽</Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchPersonDetails } from '../api/tmdb';
 import { FilmGrain } from '../components/FilmGrain';
+import { useJournalStore } from '@/store/useJournalStore';
 
 export const CastDetail = ({ 
   personId, 
@@ -19,6 +20,8 @@ export const CastDetail = ({
     queryKey: ['person-detail', personId],
     queryFn: () => fetchPersonDetails(personId),
   });
+
+  const { openComposer } = useJournalStore();
 
   if (isError) {
     return (
@@ -123,6 +126,19 @@ export const CastDetail = ({
         </View>
 
       </ScrollView>
+
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        // Pass the CAST context here!
+        onPress={() => openComposer({ id: personId, type: 'cast', name: person?.name || 'Unknown' })}
+        style={{ bottom: Math.max(insets.bottom + 20, 32), right: 24 }}
+        className="absolute bg-dark-charcoal px-5 py-4 rounded-full shadow-2xl flex-row items-center border border-white/10 z-50"
+      >
+        <Text className="text-soft-cream text-lg mr-2 leading-none">✍🏽</Text>
+        <Text className="font-sans text-soft-cream font-bold text-[11px] tracking-widest uppercase mt-0.5">
+          log thought
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

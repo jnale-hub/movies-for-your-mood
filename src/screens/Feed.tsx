@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchMoviesByVibe } from '../api/tmdb';
 import { FilmGrain } from '../components/FilmGrain';
 import { Movie, Vibe } from '../types/movie.types';
+import { useJournalStore } from '@/store/useJournalStore';
 
 const feedThemes: Record<Vibe, { bg: string; title: string; textColor: string }> = {
   laugh: { bg: 'bg-soft-cream', title: 'movies to heal your soul', textColor: 'text-dark-charcoal' },
@@ -87,6 +88,8 @@ export const Feed = ({
     refetchOnMount: false,
   });
 
+  const { openComposer } = useJournalStore();
+
   return (
     <View className={`flex-1 ${theme.bg} overflow-hidden`}>
       <FilmGrain />
@@ -121,6 +124,18 @@ export const Feed = ({
           
         </View>
       </ScrollView>
+
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        onPress={() => openComposer()} 
+        style={{ bottom: Math.max(insets.bottom + 20, 32), right: 24 }}
+        className="absolute bg-dark-charcoal px-5 py-4 rounded-full shadow-2xl flex-row items-center border border-white/10 z-50"
+      >
+        <Text className="text-soft-cream text-lg mr-2 leading-none">✍🏽</Text>
+        <Text className="font-sans text-soft-cream font-bold text-[11px] tracking-widest uppercase mt-0.5">
+          log thought
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
