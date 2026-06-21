@@ -9,6 +9,7 @@ import { Feed } from './src/screens/Feed';
 import { MovieDetail } from './src/screens/MovieDetail'; 
 import { CastDetail } from './src/screens/CastDetail';
 import { Vibe } from './src/types/movie.types';
+import { JournalComposer } from '@/components/JournalComposer';
 
 const queryClient = new QueryClient();
 
@@ -55,11 +56,14 @@ export default function App() {
   };
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <StatusBar style="light" />
-        {renderScreen()}
-      </QueryClientProvider>
-    </SafeAreaProvider>
-  );
+  <SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <StatusBar style="dark" />
+      {renderScreen()}
+      
+      <JournalComposer />
+      
+    </QueryClientProvider>
+  </SafeAreaProvider>
+);
 }
