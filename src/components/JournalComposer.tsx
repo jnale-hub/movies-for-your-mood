@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 
 import { searchTMDB } from '../api/tmdb';
 import { useJournalStore, WatchStage } from '../store/useJournalStore';
@@ -34,7 +35,8 @@ export const JournalComposer = () => {
 
   const activeContext = composerContext || selectedContext;
 
-  const handlePost = async () => {
+  // 🚨 NEW LOGIC: keepOpen determines if the modal stays open for threading
+  const handlePost = async (keepOpen = false) => {
     if (text.trim().length === 0) return;
     
     await addEntry({
@@ -45,7 +47,11 @@ export const JournalComposer = () => {
       text: text.trim()
     });
     
-    closeComposer();
+    if (keepOpen) {
+      setText(''); // Clear the text to start the next note in the thread
+    } else {
+      closeComposer();
+    }
   };
 
   return (
@@ -58,7 +64,7 @@ export const JournalComposer = () => {
           
           <View 
             style={{ paddingBottom: Platform.OS === 'ios' ? Math.max(insets.bottom, 20) : 20 }}
-            className="w-full md:max-w-2xl md:mx-auto bg-art-sand md:rounded-2xl rounded-t-[32px] min-h-[60vh] md:min-h-[400px] shadow-2xl flex-col"
+            className="w-full md:max-w-2xl md:mx-auto bg-art-sand md:rounded-2xl rounded-t-[32px] shadow-2xl flex-col max-h-[90vh]"
           >
             {/* Header */}
             <View className="flex-row justify-between items-center p-5 md:p-6 border-b border-dark-charcoal/10">
@@ -69,16 +75,15 @@ export const JournalComposer = () => {
               <View className="w-16 items-end" />
             </View>
 
-            <View className="flex-row p-5 md:p-6 flex-1">
+            <View className="flex-row p-5 md:p-6">
               <View className="items-center mr-4">
                 <View className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-dark-charcoal flex items-center justify-center">
-                  <Text className="text-soft-cream font-serifItalic text-lg">You</Text>
+                  <Feather name="user" size={18} color="#FDFBF7" />
                 </View>
                 <View className="w-[2px] flex-1 bg-dark-charcoal/10 my-2 rounded-full" />
               </View>
 
               <View className="flex-1">
-                
                 <View className="mb-3 relative z-50">
                   {activeContext ? (
                     <View className="flex-row items-center flex-wrap">
@@ -164,15 +169,27 @@ export const JournalComposer = () => {
                     </TouchableOpacity>
                   ))}
                 </View>
-
               </View>
             </View>
 
-            <View className="flex-row justify-end p-5 border-t border-dark-charcoal/5">
+            <View className="flex-row justify-between items-center p-5 border-t border-dark-charcoal/5">
               <TouchableOpacity 
                 disabled={text.trim().length === 0}
-                onPress={handlePost}
+                onPress={() => handlePost(true)}
+                className="flex-row items-center py-2"
+                activeOpacity={0.6}
+              >
+                <Feather name="plus-circle" size={16} color={text.trim().length > 0 ? '#1E2326' : '#1E232660'} />
+                <Text className={`ml-2 font-sans text-[10px] md:text-xs uppercase tracking-widest font-bold ${text.trim().length > 0 ? 'text-dark-charcoal' : 'text-dark-charcoal/40'}`}>
+                  Post & Add Another
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                disabled={text.trim().length === 0}
+                onPress={() => handlePost(false)}
                 className={`px-8 py-3 rounded-full ${text.trim().length > 0 ? 'bg-dark-charcoal' : 'bg-dark-charcoal/20'}`}
+                activeOpacity={0.8}
               >
                 <Text className={`font-sans text-xs uppercase tracking-widest font-bold ${text.trim().length > 0 ? 'text-soft-cream' : 'text-dark-charcoal/40'}`}>
                   Post
