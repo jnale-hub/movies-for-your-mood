@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchPersonDetails } from '../api/tmdb';
 import { FilmGrain } from '../components/FilmGrain';
 import { useJournalStore } from '@/store/useJournalStore';
+import { JournalFeed } from '@/components/JournalFeed';
 
 export const CastDetail = ({ 
   personId, 
@@ -96,6 +97,8 @@ export const CastDetail = ({
           </View>
         ) : null}
 
+        <JournalFeed topicId={personId} topicType="cast" />
+        
         <View className="mb-20">
           <Text className="font-serifItalic text-xl text-dark-charcoal/50 mb-6 lowercase">known for</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-6 px-6 md:mx-0 md:px-0">
