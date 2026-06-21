@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchMovieDetails } from '../api/tmdb';
-
 import { useJournalStore } from '../store/useJournalStore';
 
 import { FilmGrain } from '../components/FilmGrain';
@@ -51,7 +50,6 @@ export const MovieDetail = ({ movieId, onBack, onActorSelect }: MovieDetailProps
     );
   }
 
-  // 2. Loading State (Standalone Skeleton Component)
   if (isLoading) {
     return <MovieDetailSkeleton />;
   }
@@ -123,11 +121,15 @@ export const MovieDetail = ({ movieId, onBack, onActorSelect }: MovieDetailProps
                 )}
 
                 <TouchableOpacity 
-                  onPress={() => toggleWatchlist({ 
-                    id: movieId, 
-                    title: movie?.title || '', 
-                    posterPath: movie?.poster_path || null 
-                  })}
+                  onPress={async () => {
+                    if (movie) {
+                      await toggleWatchlist({ 
+                        id: movieId, 
+                        title: movie.title, 
+                        posterPath: movie.poster_path || null 
+                      });
+                    }
+                  }}
                   className="flex-row items-center py-1 opacity-60 hover:opacity-100 transition-opacity"
                 >
                   <Text className="text-dark-charcoal text-sm mr-1.5 font-medium mb-0.5">
