@@ -4,7 +4,7 @@ import { Inter_400Regular, useFonts as useInterFonts } from '@expo-google-fonts/
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef } from 'react';
-import { Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, InteractionManager, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FilmGrain } from '../components/FilmGrain';
 import { Vibe } from '../types/movie.types';
@@ -40,22 +40,26 @@ const MoodTile = ({
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const translateYAnim = useRef(new Animated.Value(10)).current;
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 600,
-        delay: delay,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateYAnim, {
-        toValue: 0,
-        duration: 600,
-        delay: delay,
-        useNativeDriver: true,
-      })
-    ]).start();
-  });
+ useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      Animated.parallel([
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 600,
+          delay: delay,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateYAnim, {
+          toValue: 0,
+          duration: 600,
+          delay: delay,
+          useNativeDriver: true,
+        })
+      ]).start();
+    });
+
+    return () => task.cancel();
+  }, [delay, opacityAnim, translateYAnim]);
 
   const handlePressIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -112,13 +116,18 @@ export const VibeCheck = ({ onSelectVibe, onOpenLibrary }: VibeCheckProps) => {
   
   useEffect(() => {
     if (interLoaded && serifLoaded) {
-      Animated.timing(titleOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }).start();
+      const task = InteractionManager.runAfterInteractions(() => {
+        Animated.timing(titleOpacity, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }).start();
+      });
+
+      return () => task.cancel();
     }
-  });
+  }, [interLoaded, serifLoaded, titleOpacity]);
+
   if (!interLoaded || !serifLoaded) return null;
 
   return (
