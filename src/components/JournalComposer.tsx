@@ -53,7 +53,7 @@ export const JournalComposer = () => {
   };
 
   return (
-    <Modal visible={isComposing} animationType={Platform.OS === 'web' ? 'fade' : 'slide'} transparent={true} onRequestClose={closeComposer}>
+    <Modal visible={isComposing} animationType='fade' transparent={true} onRequestClose={closeComposer}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 justify-end md:justify-center bg-black/60 md:p-6"

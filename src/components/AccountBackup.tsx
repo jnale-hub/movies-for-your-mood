@@ -87,7 +87,7 @@ export const AccountBackup = ({ visible, onClose }: AccountBackupProps) => {
   };
 
   return (
-    <Modal visible={visible} animationType={Platform.OS === 'web' ? 'fade' : 'slide'} transparent>
+    <Modal visible={visible} animationType='fade' transparent>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1 justify-end md:justify-center bg-black/60 md:p-6"
