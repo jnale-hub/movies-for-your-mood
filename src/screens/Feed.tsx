@@ -42,7 +42,13 @@ const AnimatedMovieCard = ({
 
   return (
     <View className="w-[48%] md:w-[23%] mb-6">
-      <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+      <TouchableOpacity 
+        activeOpacity={0.8} 
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={`${movie.title}, released in ${movie.release_date?.split('-')[0]}, rating ${movie.vote_average.toFixed(1)} stars`}
+        accessibilityHint={`View details for ${movie.title}`}
+      >
         <Animated.View style={{ opacity: opacityAnim }}>
           <View className="w-full aspect-[2/3] rounded-2xl overflow-hidden bg-black/10 shadow-sm mb-2.5">
             {movie.poster_path ? (
@@ -50,14 +56,15 @@ const AnimatedMovieCard = ({
                 source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
                 className="w-full h-full"
                 resizeMode="cover"
+                importantForAccessibility="no"
               />
             ) : (
-              <View className="flex-1 justify-center items-center p-4">
+              <View className="flex-1 justify-center items-center p-4" importantForAccessibility="no-hide-descendants">
                 <Text className={`font-serif text-center text-sm ${theme.textColor}`}>{movie.title}</Text>
               </View>
             )}
           </View>
-          <View className="px-1">
+          <View className="px-1" importantForAccessibility="no-hide-descendants">
             <Text className={`font-sans text-sm font-semibold tracking-tight ${theme.textColor}`} numberOfLines={1}>{movie.title}</Text>
             <Text className={`font-sans text-[11px] tracking-wider mt-0.5 opacity-60 ${theme.textColor}`}>
               {movie.release_date?.split('-')[0]} • ★ {movie.vote_average.toFixed(1)}
@@ -101,13 +108,23 @@ export const Feed = ({
         <View className="w-full max-w-6xl mx-auto px-6" style={{ paddingTop: insets.top + 24, paddingBottom: 48 }}>
           
           <View className="flex-row justify-between items-center mb-6">
-            <TouchableOpacity onPress={onBack} className="flex-row items-center py-2 -ml-2" activeOpacity={0.6}>
+            <TouchableOpacity 
+              onPress={onBack} 
+              className="flex-row items-center py-2 -ml-2" 
+              activeOpacity={0.6}
+              accessibilityRole="button"
+              accessibilityLabel="Change vibe"
+              accessibilityHint="Returns to the vibe selection screen"
+            >
               <Feather
                 name="chevron-left" 
                 size={20} 
                 color={theme.bg === 'bg-soft-cream' || theme.bg === 'bg-[#A49A87]' ? '#1E2326' : '#FDFBF7'} 
               />
-              <Text className={`font-sans text-sm lowercase tracking-wider opacity-80 ml-1 ${theme.textColor}`}>
+              <Text 
+                className={`font-sans text-sm lowercase tracking-wider opacity-80 ml-1 ${theme.textColor}`}
+                importantForAccessibility="no"
+              >
                 change vibe
               </Text>
             </TouchableOpacity>
@@ -115,14 +132,22 @@ export const Feed = ({
             <TouchableOpacity 
               onPress={onOpenLibrary}
               className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center border border-white/10"
+              accessibilityRole="button"
+              accessibilityLabel="My Library"
+              accessibilityHint="Opens your journal and watchlist"
             >
               <Feather name="bookmark" size={18} color={theme.textColor} />
             </TouchableOpacity>
           </View>
           
-          <Text className={`font-serifItalic text-3xl md:text-5xl text-center mb-8 ${theme.textColor}`}>{theme.title}</Text>
+          <Text 
+            className={`font-serifItalic text-3xl md:text-5xl text-center mb-8 ${theme.textColor}`}
+            accessibilityRole="header"
+          >
+            {theme.title}
+          </Text>
 
-          {isLoading && <ActivityIndicator size="small" color={theme.textColor} />}
+          {isLoading && <ActivityIndicator size="small" color={theme.textColor} accessibilityLabel="Loading movies" />}
           
           {isLoading ?(
             <FeedSkeleton theme={theme} />
@@ -141,7 +166,13 @@ export const Feed = ({
           )}
 
           {data && displayLimit < data.results.length && (
-            <TouchableOpacity onPress={() => setDisplayLimit(prev => prev + 4)} className="py-8 items-center">
+            <TouchableOpacity 
+              onPress={() => setDisplayLimit(prev => prev + 4)} 
+              className="py-8 items-center"
+              accessibilityRole="button"
+              accessibilityLabel="Load more movies"
+              accessibilityHint="Shows more movie recommendations for this vibe"
+            >
               <Text className={`font-sans text-xs tracking-widest uppercase opacity-40 ${theme.textColor}`}>load more</Text>
             </TouchableOpacity>
           )}
@@ -155,8 +186,11 @@ export const Feed = ({
         onPress={() => openComposer()} 
         style={{ bottom: Math.max(insets.bottom + 20, 32), right: 24 }}
         className="absolute bg-dark-charcoal px-5 py-4 rounded-full shadow-2xl flex-row items-center border border-white/10 z-50"
+        accessibilityRole="button"
+        accessibilityLabel="Log thought"
+        accessibilityHint="Opens the journal composer to write a new journal entry"
       >
-        <Text className="text-soft-cream text-lg mr-2 leading-none">✍🏽</Text>
+        <Text className="text-soft-cream text-lg mr-2 leading-none" importantForAccessibility="no">✍🏽</Text>
         <Text className="font-sans text-soft-cream font-bold text-[11px] tracking-widest uppercase mt-0.5">
           log thought
         </Text>

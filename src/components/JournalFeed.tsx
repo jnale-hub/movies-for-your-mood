@@ -12,12 +12,23 @@ export const JournalFeed = ({ topicId, topicType }: { topicId: number; topicType
 
   return (
     <View className="mb-16">
-      <Text className="font-serifItalic text-xl md:text-2xl text-dark-charcoal/50 mb-6 lowercase">your thoughts</Text>
+      <Text 
+        className="font-serifItalic text-xl md:text-2xl text-dark-charcoal/50 mb-6 lowercase"
+        accessibilityRole="header"
+      >
+        your thoughts
+      </Text>
       
       {entries.map((entry, index) => (
-        <View key={entry.id} className="flex-row mb-6">
+        <View 
+          key={entry.id} 
+          className="flex-row mb-6"
+          accessible={true}
+          accessibilityRole="text"
+          accessibilityLabel={`Journal entry on ${new Date(entry.createdAt).toLocaleDateString()}. ${entry.stage} watching. Thoughts: ${entry.text}`}
+        >
           {/* Avatar & Line */}
-          <View className="items-center mr-4">
+          <View className="items-center mr-4" importantForAccessibility="no-hide-descendants">
             <View className="w-10 h-10 rounded-full bg-dark-charcoal flex items-center justify-center z-10">
               <Text className="text-soft-cream font-serifItalic text-lg">Y</Text>
             </View>
@@ -27,7 +38,7 @@ export const JournalFeed = ({ topicId, topicType }: { topicId: number; topicType
           </View>
 
           {/* Content */}
-          <View className="flex-1 pb-4">
+          <View className="flex-1 pb-4" importantForAccessibility="no-hide-descendants">
             <View className="flex-row justify-between items-center mb-1">
               <Text className="font-sans font-bold text-dark-charcoal">My Journal</Text>
               <Text className="font-sans text-xs text-dark-charcoal/40">
