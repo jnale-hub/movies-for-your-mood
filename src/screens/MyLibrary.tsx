@@ -20,8 +20,7 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
   const isLoaded = useJournalStore((state) => state.isLoaded);
 
   return (
-    <View className="flex-1 bg-art-sand">
-      {/* HEADER SECTION */}
+    <View className="flex-1 bg-art-sand overflow-hidden">
       <View 
         className="px-6 mb-4 w-full max-w-4xl mx-auto border-b border-dark-charcoal/10 pb-4" 
         style={{ paddingTop: Math.max(insets.top, 20) + 8 }}
@@ -34,13 +33,11 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
           
           <Text className="font-serifItalic text-2xl text-dark-charcoal lowercase">my library</Text>
           
-          {/* SETTINGS BUTTON */}
           <TouchableOpacity onPress={() => setShowAccountModal(true)} className="w-10 items-end py-2 -mr-2" activeOpacity={0.6}>
             <Feather name="settings" size={20} color="#1E2326" />
           </TouchableOpacity>
         </View>
 
-        {/* TABS (Centered) */}
         <View className="flex-row bg-dark-charcoal/5 p-1 rounded-full w-full max-w-[320px] self-center">
           <TouchableOpacity onPress={() => setActiveTab('journal')} className={`flex-1 py-3 rounded-full items-center ${activeTab === 'journal' ? 'bg-dark-charcoal' : ''}`}>
             <Text className={`font-sans text-[10px] tracking-widest uppercase font-bold ${activeTab === 'journal' ? 'text-soft-cream' : 'text-dark-charcoal/40'}`}>journal ({entries.length})</Text>
@@ -51,7 +48,6 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
         </View>
       </View>
 
-      {/* SCROLLABLE CONTENT */}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="w-full max-w-4xl mx-auto px-6 pb-20 pt-4">
           {!isLoaded ? (
@@ -92,15 +88,19 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
                 </View>
               ))
             ) : (
-              <Text className="text-center opacity-40 mt-10 font-sans text-sm">
-                Your journal is empty.
-              </Text>
+              <View className="items-center justify-center mt-16 w-full">
+                <Text className="text-4xl mb-4">📓</Text>
+                <Text className="text-center opacity-40 font-serifItalic text-xl text-dark-charcoal">
+                  your journal is empty.
+                </Text>
+              </View>
             )
           ) : (
-            <View className="flex-row flex-wrap justify-between w-full">
+            <View className="flex-row flex-wrap -mx-2 w-full">
               {watchlist.length > 0 ? (
                 watchlist.map((item) => (
-                  <View key={item.id} className="w-[48%] md:w-[23%] mb-6">
+                  // 🚨 SWAPPED w-[48%] to w-1/2 and added px-2 for clean margins
+                  <View key={item.id} className="w-1/2 md:w-1/4 px-2 mb-6">
                     <TouchableOpacity activeOpacity={0.7} onPress={() => onMovieSelect(item.id)}>
                       <View 
                         className="w-full bg-black/10 rounded-2xl overflow-hidden mb-2.5 shadow-sm"
@@ -119,9 +119,12 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
                   </View>
                 ))
               ) : (
-                <Text className="text-center w-full opacity-40 mt-10 font-sans text-sm">
-                  Your watchlist is empty.
-                </Text>
+                <View className="items-center justify-center mt-16 w-full">
+                  <Text className="text-4xl mb-4">🍿</Text>
+                  <Text className="text-center opacity-40 font-serifItalic text-xl text-dark-charcoal">
+                    your watchlist is empty.
+                  </Text>
+                </View>
               )}
             </View>
           )}
