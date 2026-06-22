@@ -5,7 +5,7 @@ import { fetchPersonDetails } from '../api/tmdb';
 import { FilmGrain } from '../components/FilmGrain';
 import { useJournalStore } from '@/store/useJournalStore';
 import { JournalFeed } from '@/components/JournalFeed';
-import { Feather } from '@expo/vector-icons';
+import { Header } from '@/components/Header';
 
 export const CastDetail = ({ 
   personId, 
@@ -63,24 +63,11 @@ export const CastDetail = ({
     <View className="flex-1 bg-art-sand">
       <FilmGrain />
       
-      <View style={{ paddingTop: Math.max(insets.top + 10, 20) }} className="px-6 pb-4 z-10">
-       <TouchableOpacity 
-          onPress={onBack} 
-          className="self-start flex-row items-center py-2 pr-4 opacity-60 hover:opacity-100 -ml-2"
-          activeOpacity={0.6}
-          accessibilityRole="button"
-          accessibilityLabel="Back to movie"
-          accessibilityHint="Returns to the movie details screen"
-        >
-          <Feather name="chevron-left" size={20} color="#1E2326" importantForAccessibility="no" />
-          <Text 
-            className="font-sans text-dark-charcoal text-xs tracking-widest uppercase font-bold ml-1"
-            importantForAccessibility="no-hide-descendants"
-          >
-            back to movie
-          </Text>
-        </TouchableOpacity>
-      </View>
+      
+      <Header
+        onBack={onBack}
+        backText="back to movie"
+      />
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6 md:max-w-4xl md:mx-auto md:w-full">
         

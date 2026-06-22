@@ -7,7 +7,7 @@ import { FilmGrain } from '../components/FilmGrain';
 import { Movie, Vibe } from '../types/movie.types';
 import { useJournalStore } from '@/store/useJournalStore';
 import { FeedSkeleton } from '@/components/FeedSkeleton';
-import { Feather } from '@expo/vector-icons';
+import { Header } from '@/components/Header';
 
 const feedThemes: Record<Vibe, { bg: string; title: string; textColor: string }> = {
   laugh: { bg: 'bg-soft-cream', title: 'movies to heal your soul', textColor: 'text-dark-charcoal' },
@@ -105,41 +105,15 @@ export const Feed = ({
     <View className={`flex-1 ${theme.bg} overflow-hidden`}>
       <FilmGrain />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="w-full max-w-6xl mx-auto px-6" style={{ paddingTop: insets.top + 24, paddingBottom: 48 }}>
-          
-          <View className="flex-row justify-between items-center mb-6">
-            <TouchableOpacity 
-              onPress={onBack} 
-              className="flex-row items-center py-2 -ml-2" 
-              activeOpacity={0.6}
-              accessibilityRole="button"
-              accessibilityLabel="Change vibe"
-              accessibilityHint="Returns to the vibe selection screen"
-            >
-              <Feather
-                name="chevron-left" 
-                size={20} 
-                color={theme.bg === 'bg-soft-cream' || theme.bg === 'bg-[#A49A87]' ? '#1E2326' : '#FDFBF7'} 
-              />
-              <Text 
-                className={`font-sans text-sm lowercase tracking-wider opacity-80 ml-1 ${theme.textColor}`}
-                importantForAccessibility="no"
-              >
-                change vibe
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              onPress={onOpenLibrary}
-              className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center border border-white/10"
-              accessibilityRole="button"
-              accessibilityLabel="My Library"
-              accessibilityHint="Opens your journal and watchlist"
-            >
-              <Feather name="bookmark" size={18} color={theme.textColor} />
-            </TouchableOpacity>
-          </View>
-          
+        <Header 
+            onBack={onBack}
+            backText="change vibe"
+            rightIcon="bookmark"
+            onRightPress={onOpenLibrary}
+            colorHex={theme.bg === 'bg-soft-cream' || theme.bg === 'bg-[#A49A87]' ? '#1E2326' : '#FDFBF7'}
+            colorClass={theme.textColor}
+          />
+        <View className="w-full max-w-6xl mx-auto px-6" style={{ paddingBottom: 48 }}>
           <Text 
             className={`font-serifItalic text-3xl md:text-5xl text-center mb-8 ${theme.textColor}`}
             accessibilityRole="header"

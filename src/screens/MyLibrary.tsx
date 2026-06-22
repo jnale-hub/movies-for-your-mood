@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useJournalStore } from '../store/useJournalStore';
 import { AccountBackup } from '../components/AccountBackup';
+import { Header } from '@/components/Header';
 
 interface MyLibraryProps {
   onBack: () => void;
@@ -11,7 +11,6 @@ interface MyLibraryProps {
 }
 
 export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
-  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'journal' | 'watchlist'>('journal');
   const [showAccountModal, setShowAccountModal] = useState(false);
   
@@ -21,23 +20,14 @@ export const MyLibrary = ({ onBack, onMovieSelect }: MyLibraryProps) => {
 
   return (
     <View className="flex-1 bg-art-sand overflow-hidden">
-      <View 
-        className="px-6 mb-4 w-full max-w-4xl mx-auto border-b border-dark-charcoal/10 pb-4" 
-        style={{ paddingTop: Math.max(insets.top, 20) + 8 }}
-      >
-        <View className="flex-row justify-between items-center mb-6">
-          <TouchableOpacity onPress={onBack} className="flex-row items-center py-2 -ml-2" activeOpacity={0.6}>
-            <Feather name="chevron-left" size={20} color="#1E2326" />
-            <Text className="text-dark-charcoal font-sans text-xs tracking-widest uppercase font-bold ml-1">back</Text>
-          </TouchableOpacity>
-          
-          <Text className="font-serifItalic text-2xl text-dark-charcoal lowercase">my library</Text>
-          
-          <TouchableOpacity onPress={() => setShowAccountModal(true)} className="w-10 items-end py-2 -mr-2" activeOpacity={0.6}>
-            <Feather name="settings" size={20} color="#1E2326" />
-          </TouchableOpacity>
-        </View>
+      <Header 
+        title="my library" 
+        onBack={onBack} 
+        rightIcon="settings" 
+        onRightPress={() => setShowAccountModal(true)} 
+      />
 
+      <View className="px-6 w-full max-w-4xl mx-auto border-b border-dark-charcoal/10 pb-4 mb-4">
         <View className="flex-row bg-dark-charcoal/5 p-1 rounded-full w-full max-w-[320px] self-center">
           <TouchableOpacity onPress={() => setActiveTab('journal')} className={`flex-1 py-3 rounded-full items-center ${activeTab === 'journal' ? 'bg-dark-charcoal' : ''}`}>
             <Text className={`font-sans text-[10px] tracking-widest uppercase font-bold ${activeTab === 'journal' ? 'text-soft-cream' : 'text-dark-charcoal/40'}`}>journal ({entries.length})</Text>

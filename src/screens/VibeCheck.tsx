@@ -8,6 +8,7 @@ import { Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FilmGrain } from '../components/FilmGrain';
 import { Vibe } from '../types/movie.types';
+import { Header } from '@/components/Header';
 
 const VIBES_DATA = [
   { vibeKey: 'laugh' as Vibe, emoji: '😂', color: 'bg-soft-cream', text: 'need a good laugh', textColor: 'text-dark-charcoal', delay: 100 },
@@ -124,28 +125,11 @@ export const VibeCheck = ({ onSelectVibe, onOpenLibrary }: VibeCheckProps) => {
     <View className="flex-1 bg-art-sand overflow-hidden">
       <FilmGrain />
       
-      {/* HEADER */}
-      <View 
-        className="px-6 flex-row justify-between items-center z-10 absolute top-0 left-0 right-0"
-        style={{ paddingTop: Math.max(insets.top, 20) + 8 }}
-      >
-        <Text 
-          className="font-serifItalic text-2xl text-dark-charcoal lowercase"
-          accessibilityRole="header"
-        >
-          vibe check
-        </Text>
-        <TouchableOpacity 
-          onPress={onOpenLibrary}
-          activeOpacity={0.8}
-          className="w-10 h-10 rounded-full bg-dark-charcoal flex items-center justify-center border border-white/10"
-          accessibilityRole="button"
-          accessibilityLabel="My Library"
-          accessibilityHint="Opens your journal and watchlist"
-        >
-          <Feather name="bookmark" size={18} color="#FDFBF7" />
-        </TouchableOpacity>
-      </View>
+      <Header 
+        rightIcon="bookmark"
+        onRightPress={onOpenLibrary}
+        isAbsolute={true}
+      />
 
       <ScrollView 
         className="flex-1" 
