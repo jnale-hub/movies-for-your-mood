@@ -65,5 +65,12 @@ npx expo start
 * Press `a` to open it on an Android emulator.
 * Or scan the QR code with the Expo Go app on your physical device.
 
+## 🔮 Future Features & Recommendations
 
+This project is continuously evolving. Here is the roadmap for upcoming features and architectural improvements:
 
+* **Global Social Feed:** Expand the app from a personal utility to a community platform. Implement a public feed where users can publish their journal entries, share what they are currently watching.
+* **SEO & Deep Linking (Expo Router):** Migrate from the current state-based Single Page App (SPA) routing to Expo Router. This will introduce file-based routing, enabling shareable URLs for specific movies (e.g., `.../movie/123`), dynamic metadata, and vastly improved SEO for the web deployment.
+* **Evolved Design System:** Abstract the current Tailwind/NativeWind utility classes into a strict, reusable design system component library.
+* **Performance & Asset Optimization:** Continue optimizing the web build.
+* **Advanced Journaling:** Add rich text formatting to the journal composer, allowing users to tag specific actors, rate movies on a granular scale, and export their reviews.
