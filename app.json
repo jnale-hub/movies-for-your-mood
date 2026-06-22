@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "moviestowatchbasedonyourmood",
-    "slug": "moviestowatchbasedonyourmood",
+    "name": "Movies For Your Mood",
+    "slug": "moviesforyourmood",
     "version": "1.0.0",
     "web": {
       "favicon": "./assets/favicon.png"
@@ -10,25 +10,26 @@
       "tsconfigPaths": true
     },
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#D1BFA5"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.delimajohnmark.moviestowatchbasedonyourmood"
+      "bundleIdentifier": "com.delimajohnmark.moviestowatchbasedonyourmood",
+      "icon": "./assets/ios-icon.png"
     },
     "android": {
       "package": "com.delimajohnmark.moviestowatchbasedonyourmood",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#D1BFA5"
       }
     },
     "extra": {
