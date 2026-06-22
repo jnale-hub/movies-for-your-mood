@@ -1,11 +1,10 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
-import { Alert } from 'react-native';
 
 export type WatchStage = 'before' | 'during' | 'after' | null;
 
 export interface JournalEntry {
-  id: string;
+  id: string; 
   topicId?: number;
   topicType: 'movie' | 'cast' | 'general';
   topicName: string;
@@ -14,7 +13,7 @@ export interface JournalEntry {
   createdAt: number;
 }
 
-export interface SavedMovie {
+export interface WatchlistItem {
   id: number;
   title: string;
   posterPath: string | null;
@@ -22,120 +21,167 @@ export interface SavedMovie {
 
 interface JournalStore {
   entries: JournalEntry[];
-  watchlist: SavedMovie[];
+  watchlist: WatchlistItem[];
   isLoaded: boolean;
-  
-
-  fetchInitialData: () => Promise<void>;
-  addEntry: (entry: Omit<JournalEntry, 'id' | 'createdAt'>) => Promise<void>;
-  toggleWatchlist: (movie: SavedMovie) => Promise<void>;
-  isInWatchlist: (id: number) => boolean;
-
-  // Composer Control
   isComposing: boolean;
   composerContext: { id: number; type: 'movie' | 'cast'; name: string } | null;
-  openComposer: (context?: { id: number; type: 'movie' | 'cast'; name: string } | null) => void;
+
+  init: () => void;
+  fetchData: () => Promise<void>;
+  openComposer: (context?: { id: number; type: 'movie' | 'cast'; name: string }) => void;
   closeComposer: () => void;
+  addEntry: (entry: Omit<JournalEntry, 'id' | 'createdAt'>) => Promise<void>;
+  toggleWatchlist: (item: WatchlistItem) => Promise<void>;
+  isInWatchlist: (id: number) => boolean;
 }
 
 export const useJournalStore = create<JournalStore>((set, get) => ({
   entries: [],
   watchlist: [],
   isLoaded: false,
+  isComposing: false,
+  composerContext: null,
 
-  fetchInitialData: async () => {
+  init: () => {
+    get().fetchData();
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        get().fetchData();
+      } else if (event === 'SIGNED_OUT') {
+        set({ entries: [], watchlist: [], isLoaded: true });
+      }
+    });
+  },
+
+  fetchData: async () => {
+    set({ isLoaded: false });
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      await supabase.auth.signInAnonymously();
+      set({ isLoaded: true });
+      return;
+    }
+
     try {
-      const [entriesResponse, watchlistResponse] = await Promise.all([
-        supabase.from('journal_entries').select('*').order('created_at', { ascending: false }),
-        supabase.from('watchlist').select('*')
-      ]);
+      const { data: journalData } = await supabase
+        .from('journal_entries')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      if (entriesResponse.error) throw entriesResponse.error;
-      if (watchlistResponse.error) throw watchlistResponse.error;
+      const { data: watchlistData } = await supabase
+        .from('watchlist')
+        .select('*');
 
-      const mappedEntries = (entriesResponse.data || []).map(e => ({
-        id: e.id,
-        topicId: e.topic_id,
-        topicType: e.topic_type,
-        topicName: e.topic_name,
-        stage: e.stage,
-        text: e.text,
-        createdAt: e.created_at
-      }));
+      const mappedEntries: JournalEntry[] = journalData?.map(item => ({
+        id: item.id,
+        topicId: item.topic_id,
+        topicType: item.topic_type as 'movie' | 'cast' | 'general',
+        topicName: item.topic_name,
+        stage: item.stage as WatchStage,
+        text: item.text,
+        createdAt: Number(item.created_at),
+      })) || [];
 
-      const mappedWatchlist = (watchlistResponse.data || []).map(w => ({
-        id: w.id,
-        title: w.title,
-        posterPath: w.poster_path
-      }));
+      const mappedWatchlist: WatchlistItem[] = watchlistData?.map(item => ({
+        id: Number(item.id),
+        title: item.title,
+        posterPath: item.poster_path,
+      })) || [];
 
       set({ entries: mappedEntries, watchlist: mappedWatchlist, isLoaded: true });
     } catch (error) {
-      console.error("Failed to load cloud data:", error);
-      set({ isLoaded: true }); 
+      console.error("Error fetching data:", error);
+      set({ isLoaded: true });
     }
   },
-  
+
+  openComposer: (context) => set({ isComposing: true, composerContext: context || null }),
+  closeComposer: () => set({ isComposing: false, composerContext: null }),
+
   addEntry: async (entryData) => {
-    const previousEntries = get().entries;
-    const newEntry = { 
-      ...entryData, 
-      id: Math.random().toString(36).substring(2, 9), 
-      createdAt: Date.now() 
-    };
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
 
-    set({ entries: [newEntry, ...previousEntries] });
+    const newId = Date.now().toString();
+    const newCreatedAt = Date.now();
 
-    const { error } = await supabase.from('journal_entries').insert([{
-      id: newEntry.id,
-      topic_id: newEntry.topicId,
-      topic_type: newEntry.topicType,
-      topic_name: newEntry.topicName,
-      stage: newEntry.stage,
-      text: newEntry.text,
-      created_at: newEntry.createdAt
-    }]);
+    const { error } = await supabase
+      .from('journal_entries') 
+      .insert({
+        id: newId,
+        user_id: session.user.id,
+        topic_id: entryData.topicId || null,
+        topic_type: entryData.topicType,
+        topic_name: entryData.topicName,
+        stage: entryData.stage,
+        text: entryData.text,
+        created_at: newCreatedAt,
+      });
 
     if (error) {
-      console.error("Failed to save entry:", error);
-      set({ entries: previousEntries });
-      Alert.alert("Connection Error", "Failed to save your thought. Please check your internet.");
+      console.error("Error saving entry:", error);
+      return;
     }
+
+    const newEntry: JournalEntry = {
+      id: newId,
+      topicId: entryData.topicId,
+      topicType: entryData.topicType,
+      topicName: entryData.topicName,
+      stage: entryData.stage,
+      text: entryData.text,
+      createdAt: newCreatedAt,
+    };
+    set((state) => ({ entries: [newEntry, ...state.entries] }));
   },
 
-  toggleWatchlist: async (movie) => {
+  toggleWatchlist: async (item) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const state = get();
-    const previousWatchlist = state.watchlist;
-    const exists = previousWatchlist.some(m => m.id === movie.id);
-    
-    if (exists) {
-      set({ watchlist: previousWatchlist.filter(m => m.id !== movie.id) });
-      const { error } = await supabase.from('watchlist').delete().eq('id', movie.id);
-      
+    const isSaved = state.isInWatchlist(item.id);
+
+    if (isSaved) {
+      const { error } = await supabase
+        .from('watchlist')
+        .delete()
+        .eq('id', item.id)
+        .eq('user_id', session.user.id); 
+        
       if (error) {
-        set({ watchlist: previousWatchlist });
-        Alert.alert("Error", "Could not remove movie from watchlist.");
+        console.error("Error removing from watchlist:", error);
+        return;
       }
+
+      set((state) => ({
+        watchlist: state.watchlist.filter(w => w.id !== item.id)
+      }));
     } else {
-      set({ watchlist: [movie, ...previousWatchlist] });
-      const { error } = await supabase.from('watchlist').insert([{
-        id: movie.id,
-        title: movie.title,
-        poster_path: movie.posterPath
-      }]);
+      const { error } = await supabase
+        .from('watchlist')
+        .insert({
+          id: item.id,
+          user_id: session.user.id,
+          title: item.title,
+          poster_path: item.posterPath,
+        });
 
       if (error) {
-        set({ watchlist: previousWatchlist });
-        Alert.alert("Error", "Could not save movie to watchlist.");
+        console.error("Error adding to watchlist:", error);
+        return;
       }
+
+      set((state) => ({
+        watchlist: [{ ...item }, ...state.watchlist]
+      }));
     }
   },
 
-  isInWatchlist: (id) => get().watchlist.some(m => m.id === id),
-
-  // Composer Control
-  isComposing: false,
-  composerContext: null,
-  openComposer: (context = null) => set({ isComposing: true, composerContext: context }),
-  closeComposer: () => set({ isComposing: false, composerContext: null }),
+  isInWatchlist: (id) => get().watchlist.some(item => item.id === id),
 }));
+
+useJournalStore.getState().init();

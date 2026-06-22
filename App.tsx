@@ -1,7 +1,6 @@
 import 'react-native-url-polyfill/auto'; 
 
-import { useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -15,7 +14,6 @@ import { Vibe } from './src/types/movie.types';
 
 import { JournalComposer } from './src/components/JournalComposer';
 import { MyLibrary } from './src/screens/MyLibrary';
-import { useJournalStore } from '@/store/useJournalStore';
 
 const queryClient = new QueryClient();
 
@@ -25,15 +23,6 @@ export default function App() {
   const [selectedCastId, setSelectedCastId] = useState<number | null>(null);
   const [showLibrary, setShowLibrary] = useState(false);
 
-  const { fetchInitialData } = useJournalStore();
-
-  useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
-      fetchInitialData();
-    });
-
-    return () => task.cancel();
-  }, []); 
 
   const renderScreen = () => {
     if (showLibrary) {
@@ -92,11 +81,8 @@ export default function App() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <StatusBar style="dark" />
-        
         {renderScreen()}
-        
         <JournalComposer />
-        
       </QueryClientProvider>
     </SafeAreaProvider>
   );
